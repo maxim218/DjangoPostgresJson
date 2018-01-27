@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        .btn {
+            padding: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Главная страница</h1>
+<h2>Тестирование PostgreSQL</h2>
+<hr>
+<br>
+<br>
+
+<form id = "form_1" action = "/add_one_man/" method = "POST">
+    {% csrf_token %}
+    Имя <br><input type = "text" name = 'x'>
+    <br>
+    <br>
+    Фамилия <br><input type = "text" name = 'y'>
+    <br>
+    <br>
+    Возраст <br><input type = "text" name = 'z'>
+    <br>
+    <br>
+    <input class = "btn" type = "submit" value = "Добавить пользователя">
+</form>
+
+<br>
+<br>
+<br>
+<br>
+
+<form>
+    Возраст, начиная с которого нужно выводить записи <br><input type = "text" id = 'v'>
+    <br>
+    <br>
+    <input class = "btn" type = "button" value = "Получить пользователей" onclick = "getRecords()">
+</form>
+
+<br>
+<br>
+
+<div id = "result"></div>
+
+<script>
+    "use strict";
+
+    function getElement(s) {
+        return document.getElementById(s);
+    }
+
+    window.onload = function() {
+        getElement("form_1").action += Math.random().toString();
+    };
+
+    function getRecords() {
+        const value = getElement('v').value;
+        const url = "/get_people/?v=" + value + "&r=" + Math.random();
+        console.log(url);
+        let r = new XMLHttpRequest();
+        r.open("GET", url);
+	    r.setRequestHeader("Content-Type","text/plain;charset=UTF-8");
+	    r.send(null);
+        r.onreadystatechange = function() {
+            if(r.readyState === 4 && r.status === 200) {
+                const answer = r.responseText + "";
+                r = null;
+                printResult(answer);
+            }
+        }
+    }
+
+    function printResult(s) {
+        const box = getElement("result");
+        let answer = "";
+
+        let arr = JSON.parse(s);
+        for(let i = 0; i < arr.length; i++) {
+            answer = answer + arr[i].man_name;
+            answer += "<br>";
+            answer = answer + arr[i].man_sername;
+            answer += "<br>";
+            answer = answer + arr[i].man_age;
+            answer += "<br>";
+            answer += "<br>";
+        }
+
+        box.innerHTML = answer;
+    }
+</script>
+
+</body>
+</html>
